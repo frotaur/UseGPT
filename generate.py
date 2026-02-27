@@ -89,6 +89,7 @@ if __name__ == "__main__":
     parser.add_argument("-g","--gen_tokens",default="128", help="Number of tokens to generate")
     parser.add_argument("-b", "--backward", action="store_true", help="Use it if it is a backwards model")
     parser.add_argument("-t", "--tokenizer_name", help="Name of the tokenizer to use. Use prefix like 'fr', 'en' or 'fi'")
+    parser.add_argument("-l", "--legacy", action="store_true", help="Use legacy model loading (fast=False) for older models")
     args = parser.parse_args()
 
     if(args.tokenizer_name is not None):
@@ -101,8 +102,9 @@ if __name__ == "__main__":
     backward=args.backward
 
     # Load the model using the specified path
-    # name, config, weights = MinGPT_Trainer.model_config_from_state(args.model_path,device=args.device)
-    model = Trainer.get_model_from_state(MinGPT,args.model_path)
+    model_name, config, weights = Trainer.model_config_from_state(args.model_path, device=args.device)
+    model = MinGPT(**config, fast=not args.legacy)
+    model.load_state_dict(weights)
     model.to(args.device)
     # assert name=='MinGPT', 'For now only works with MinGPT models'
 

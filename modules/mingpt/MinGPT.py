@@ -31,7 +31,8 @@ class MinGPT(ConfigModule):
         mlp_ratio: float = 4,
         dropout: float = 0.1,
         embd_dropout: float = None,
-        fast = True
+        fast = True,
+        device="cpu"
     ):
         """
         Args:
@@ -46,17 +47,17 @@ class MinGPT(ConfigModule):
             fast : Legacy parameter. Set to False to use old implementation, and allow
             loading of old models.
         """
-        configo = dict(
-            vocab_size=vocab_size,
-            n_layers=n_layers,
-            embed_dim=embed_dim,
-            n_heads=n_heads,
-            attn_length=attn_length,
-            mlp_ratio=mlp_ratio,
-            dropout=dropout,
-            embd_dropout=embd_dropout,
-        )
-        super().__init__(configo)
+        # configo = dict(
+        #     vocab_size=vocab_size,
+        #     n_layers=n_layers,
+        #     embed_dim=embed_dim,
+        #     n_heads=n_heads,
+        #     attn_length=attn_length,
+        #     mlp_ratio=mlp_ratio,
+        #     dropout=dropout,
+        #     embd_dropout=embd_dropout,
+        # )
+        super().__init__(device=device)
 
         self.attn_length = attn_length
 
@@ -91,6 +92,8 @@ class MinGPT(ConfigModule):
             "Without head : %.2fM"
             % ((self.paranum - sum(p.numel() for p in self.lm_head.parameters())) / 1e6)
         )
+
+        self.to(device)
 
     def forward(self, idx) -> torch.Tensor:
         """

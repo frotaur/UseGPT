@@ -5,10 +5,15 @@ What you will need is a '.state' model, which was saved using torchenhanced. Dep
 pip install torchenhanced
 ```
 
+Then, put the `.state`files in the 'models/' folder, and you should be good to go.
+
+See in `test_load.ipynb` for an example of loading a model.
+
+
 Then, you can test if the loading works using generate.py. Here is how it works : 
 
 ```bash
-usage: python generate.py [-h] [-d DEVICE] [-g GEN_TOKENS] [-b] [-t TOKENIZER_NAME] model_path.state
+usage: python generate.py [-h] [-d DEVICE] [-g GEN_TOKENS] [-b] [-t TOKENIZER_NAME] [--legacy] models/model_name.state
 
 Generate completions using a specified model.
 
@@ -24,14 +29,17 @@ options:
   -b, --backward        Use it if it is a backwards model
   -t TOKENIZER_NAME, --tokenizer_name TOKENIZER_NAME
                         Name of the tokenizer to use. Use prefix like 'fr' or 'en'
+  --legacy              Use legacy model loading (fast=False) for older models    
 ```
 
-Example : `python generate.py -d cuda:0 -g 256 -t fr fr_256_fw.state`
+Example : `python generate.py -d cuda -g 256 -t en --legacy models/en_med.state`
+
+Add/remove the legacy flag if it fails.
 
 If successful, after loading of the model it should start and interface where you can 'prompt' the model, press enter, and it will generate the rest. Press enter with no text to exit.
 
 ## Loading models
-To load models, you can take a look at test_load for an example.
+To load models, you can take a look at test_load.ipynb for an example.
 
 But, in a nutshell, it is very simple :
 
@@ -42,7 +50,7 @@ from modules import MinGPT
 model = Trainer.get_model_from_state(constructor=MinGPT, state_file='modelfile.state')
 ```
 
-This will load the model (on cpu), and you can use as you please.
+This will load the model (on cpu), and you can use as you please. (Note that this will fail if it's a legacy model, in that case you need to follow the method in test_load.ipynb)
 
 In case you want to save the state_dict of the model as a usual '.pt' file, you can use the utility function from Trainer : 
 
